@@ -228,4 +228,6 @@ return [
 
     ],
 
+    'token' => env('TOKEN'),
+
 ];

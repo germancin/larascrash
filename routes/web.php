@@ -11,6 +11,14 @@
 |
 */
 
+Auth::routes();
 Route::get('/', 'PagesController@home');
+Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/contact', 'PagesController@contact');
+Route::get('/search/find', 'SearchesController@find');
+Route::post('/search/find', 'SearchesController@find');
+
+
+
+
 
