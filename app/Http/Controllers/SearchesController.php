@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Search;
 use Illuminate\Http\Request;
+use Auth;
 use Illuminate\Support\Facades\Log;
 
 class SearchesController extends Controller
@@ -21,33 +22,29 @@ class SearchesController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     ** @param  Search  $search
+     * @return Response
      */
-    public function find(Request $request)
+    public function find(Search $search)
     {
-        if( empty($r = $request->all()) ) {
-            return view('home');
-        }
-        $criteria = $r['criteria'];
-        $limit = $r['limit'];
-        $locale = $r['locale'];
-        $token = config('app.token');
+        request()->validate([
+            'criteria' => 'required|min:2|max:255',
+        ]);
 
-        $url = "https://graph.facebook.com/search?type=adinterest&q=[{$criteria}]&limit={$limit}&locale={$locale}&access_token={$token}";
+        $data = array(
+            'type' => 'adinterest',
+            'q' => request('criteria'),
+            'limit' => request('limit', 100),
+            'locale' => request('locale', 'en_US'),
+            'access_token' => config('app.token'),
+        );
+
+        $url = "https://graph.facebook.com/search" . '?' . http_build_query( $data );
         $interests = json_decode(file_get_contents($url));
+        request('user_id', Auth::user()->id);
+        $search->saveSearch(request()->all());
 
-        return view('home', ['results' => $interests, 'request' => $r]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('home', ['results' => $interests, 'request' => request()->all()]);
     }
 
     /**

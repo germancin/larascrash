@@ -2,8 +2,18 @@
 
 @section('content')
 <div class="container">
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+
     <div class="row justify-content-center">
         <div class="col-md-12">
+
             <div class="card">
                 <div class="card-header">Form Test</div>
 
@@ -49,7 +59,9 @@
 
                             <div class="col-3 ">
                                 <div class="form-group">
-                                    <button name="button_submit" type="submit" class="btn btn-primary btn-lg btsu">Submit</button>
+                                    <button type="submit" class="btn btn-primary btn-lg btsu">Submit</button>
+                                    @php $user = auth()->user();@endphp
+                                    <input type="hidden" name="user_id" value="{{$user->id}}">
                                 </div>
                             </div>
                         </div>
